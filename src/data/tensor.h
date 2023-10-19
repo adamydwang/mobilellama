@@ -1,44 +1,57 @@
 #include <vector>
 
 
+enum DataType {
+    DTYPE_FLOAT,
+    DTYPE_INT,
+    DTYPE_BOOL
+};
+
+
 class Tensor {
 public:
-    Tensor(std::vector<int>& dims) {
-        this->data_int = nullptr;
+    Tensor(std::vector<int>& dims, DataType dtype=DTYPE_FLOAT) {
         this->dims = dims;
+        this->dtype = dtype;
         int size = 1;
         for (int i = 0; i < dims.size(); i++) {
             size *= dims[i];
         }
-        this->data_fp = new float[size];
+        this->data = new float[size * this->get_bytes()];
     }
+
     Tensor(std::vector<int>& dims, float* data) {
-        this->data_int = nullptr;
         this->dims = dims;
-        this->data_fp = data;
+        this->dtype = DTYPE_FLOAT;
+        this->data = data;
     }
 
     Tensor(int data) {
-        dims = {1};
-        data_int = new int[1];
-        data_int[0] = data;
-        data_fp = nullptr;
+        this->dims = {1};
+        this->dtype = DTYPE_INT;
+        this->data = new int[1];
+        (int*)this->data[0] = data;
     }
 
     Tensor(float data) {
-        dims = {1};
-        data_fp = new float[1];
-        data_fp[0] = data;
-        data_int = nullptr;
+        this->dims = {1};
+        this->dtype = DTYPE_FLOAT;
+        this->data = new float[1];
+        (float*)this->data[0] = data;
     }
 
     ~Tensor() {
-        if (data_fp != nullptr) {
-            delete[] data_fp;
+        if (data != nullptr) {
+            delete[] data;
         }
-        if (data_int != nullptr) {
-            delete[] data_int;
-        }
+    }
+
+    float* get_float_data() {
+        return (float*)this->data;
+    }
+
+    int get_int() {
+        return (int*)this->data[0];
     }
 
     int size() {
@@ -49,7 +62,23 @@ public:
         return size;
     }
 
-    float* data_fp;
-    int* data_int;
+    int bytes() {
+        return this->size() * this->get_bytes();
+    }
+
+    void* data;
     std::vector<int> dims;
+    DataType dtype;
+private:
+    int get_bytes() {
+        switch (this->dtype) {
+            case DTYPE_FLOAT:
+                return 4;
+            case DTYPE_INT:
+                return 4;
+            case DTYPE_BOOL:
+                return 1;
+        }
+        return 1;
+    }
 };

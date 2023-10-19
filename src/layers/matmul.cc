@@ -1,15 +1,15 @@
 #include <vector>
-#include "matmul.h"
+#include <src/layers/matmul.h>
 #include <src/data/tensor.h>
 
 
 void Matmul::forward(const std::vector<Tensor*>& inputs, const std::vector<Tensor*>& outputs) {
     // input1: m * k
-    float* input1 = inputs[0]->data_fp;
+    float* input1 = inputs[0]->get_float_data();
     // input2: k * n
-    float* input2 = inputs[1]->data_fp;
+    float* input2 = inputs[1]->get_float_data();
     // output: m * n
-    float* output = outputs[0]->data_fp;
+    float* output = outputs[0]->get_float_data();
     int m = inputs[0]->dims[0];
     int k = inputs[0]->dims[1];
     int n = inputs[1]->dims[1];
