@@ -1,6 +1,8 @@
+#pragma once
+
 #include <vector>
-#include <src/data/base_layer.h>
-#include <src/data/tensor.h>
+#include <layers/base_layer.h>
+#include <data/tensor.h>
 
 
 class Matmul: public BaseLayer {

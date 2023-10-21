@@ -1,20 +1,25 @@
+#pragma once
+
 #include <vector>
 #include <stdio.h>
-#include <src/layers/base_layer.h>
-#include <src/data/tensor.h>
+#include <layers/base_layer.h>
+#include <data/tensor.h>
 
 
-class RMSNormWeights: public BaseLayerWeights {
+class RMSNormParameter: public BaseLayerParameter {
 public:
-    RMSNormWeights(): dim(0), eps(0), weights(nullptr) {}
-    int load(FILE* fp) {
+    RMSNormParameter(int dim=0, float eps=0, float* weights=nullptr): dim(dim), eps(eps), weights(weights) {}
+    ~RMSNormParameter() {
+        delete[] weights;
+    }  
+    int load(FILE*& fp) {
         int res = fread(&dim, sizeof(int), 1, fp);
         res += fread(&eps, sizeof(float), 1, fp);
         weights = new float[dim];
         res += fread(weights, sizeof(float), dim, fp);
         return res;
     }
-private:
+public:
     int dim;
     float eps;
     float* weights;
@@ -23,12 +28,21 @@ private:
 
 class RMSNorm: public BaseLayer {
 public:
-    RMSNorm() {}
-    void forward(const std::vector<Tensor*>& inputs, const std::vector<Tensor*>& outputs);
+    RMSNorm(RMSNormParameter* params=nullptr) {
+        params = params;
+    }
+
+    ~RMSNorm() {
+        if (params != nullptr) {
+            delete params;
+        }
+    }
+
+    void forward(Tensor& input, Tensor& output);
     void load_weights(FILE*& fp) {
-        weights = new RMSNormWeights();
-        weights->load(fp);
+        params = new RMSNormParameter();
+        params->load(fp);
     }
 private:
-    RMSNormWeights* weights;
+    RMSNormParameter* params;
 };

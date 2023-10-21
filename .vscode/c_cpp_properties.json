@@ -4,7 +4,10 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}"
+                "${workspaceFolder}",
+                "${workspaceFolder}/deps/googletest/googletest/include",
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/deps/spdlog/include"
             ],
             "defines": [],
             "macFrameworkPath": [

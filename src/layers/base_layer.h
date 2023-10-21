@@ -1,17 +1,21 @@
+#pragma once
+
 #include <vector>
 #include <stdio.h>
-#include <src/data/tensor.h>
+#include <data/tensor.h>
 
 
-class BaseLayerWeights {
+class BaseLayerParameter {
 public:
+    BaseLayerParameter() {}
+    virtual ~BaseLayerParameter() {}
     virtual int load(FILE*& fp) = 0;
 };
 
 
-};
 class BaseLayer {
 public:
-    virtual void forward(const std::vector<Tensor*>& inputs, const std::vector<Tensor*>& outputs) = 0;
+    BaseLayer() {}
+    virtual ~BaseLayer() {}
     virtual void load_weights(FILE*& fp) = 0;
 };

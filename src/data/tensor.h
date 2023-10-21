@@ -1,57 +1,58 @@
+#pragma once
+
+#include <string.h>
 #include <vector>
-
-
-enum DataType {
-    DTYPE_FLOAT,
-    DTYPE_INT,
-    DTYPE_BOOL
-};
+#include <memory>
+#include <spdlog/spdlog.h>
 
 
 class Tensor {
 public:
-    Tensor(std::vector<int>& dims, DataType dtype=DTYPE_FLOAT) {
+    Tensor() {
+        this->data_ptr = nullptr;
+        ref_count = new int(1);
+    }
+
+    Tensor(std::vector<int>& dims) {
         this->dims = dims;
-        this->dtype = dtype;
-        int size = 1;
-        for (int i = 0; i < dims.size(); i++) {
-            size *= dims[i];
-        }
-        this->data = new float[size * this->get_bytes()];
+        this->data_ptr = new float[this->size()];
+        ref_count = new int(1);
     }
 
     Tensor(std::vector<int>& dims, float* data) {
         this->dims = dims;
-        this->dtype = DTYPE_FLOAT;
-        this->data = data;
+        this->data_ptr = new float[this->size()];
+        memcpy(this->data_ptr, data, this->size() * sizeof(float));
+        ref_count = new int(1);
     }
-
-    Tensor(int data) {
-        this->dims = {1};
-        this->dtype = DTYPE_INT;
-        this->data = new int[1];
-        (int*)this->data[0] = data;
-    }
-
-    Tensor(float data) {
-        this->dims = {1};
-        this->dtype = DTYPE_FLOAT;
-        this->data = new float[1];
-        (float*)this->data[0] = data;
-    }
-
+    
     ~Tensor() {
-        if (data != nullptr) {
-            delete[] data;
+        (*this->ref_count)--;
+        if (*this->ref_count <= 0) {
+            if (this->data_ptr != nullptr) {
+                delete[] this->data_ptr;
+            }
+            delete this->ref_count;
         }
     }
 
-    float* get_float_data() {
-        return (float*)this->data;
+    Tensor& operator=(const Tensor& other) {
+        (*other.ref_count)++;
+        (*this->ref_count)--;
+        if (*this->ref_count <= 0) {
+            if (this->data_ptr != nullptr) {
+                delete[] this->data_ptr;
+            }
+            delete this->ref_count;
+        }
+        this->dims = other.dims;
+        this->data_ptr = other.data_ptr;
+        this->ref_count = other.ref_count;
+        return *this;
     }
 
-    int get_int() {
-        return (int*)this->data[0];
+    float* data() {
+        return this->data_ptr;
     }
 
     int size() {
@@ -62,23 +63,8 @@ public:
         return size;
     }
 
-    int bytes() {
-        return this->size() * this->get_bytes();
-    }
-
-    void* data;
+    float* data_ptr;
     std::vector<int> dims;
-    DataType dtype;
 private:
-    int get_bytes() {
-        switch (this->dtype) {
-            case DTYPE_FLOAT:
-                return 4;
-            case DTYPE_INT:
-                return 4;
-            case DTYPE_BOOL:
-                return 1;
-        }
-        return 1;
-    }
+    int *ref_count;
 };

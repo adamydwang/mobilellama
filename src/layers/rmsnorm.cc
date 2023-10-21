@@ -1,18 +1,18 @@
 #include <math.h>
 #include <vector>
-#include <src/layers/rmsnorm.h>
+#include <layers/rmsnorm.h>
 
-void RMSNorm::forward(const std::vector<Tensor*>& inputs, const std::vector<Tensor*>& outputs) {
-    float* input = inputs[0]->get_float_data();
-    float* output = outputs[0]->get_float_data();
+void RMSNorm::forward(Tensor& input, Tensor& output) {
+    float* data_in = input.data();
+    float* data_out = output.data();
     float sum = 0;
-    for (int i = 0; i < this->dim; i++) {
-        sum += input[i] * input[i];
+    for (int i = 0; i < this->params->dim; i++) {
+        sum += data_in[i] * data_in[i];
     }
-    sum /= this->dim;
-    sum += this->eps;
+    sum /= this->params->dim;
+    sum += this->params->eps;
     sum = 1.0f / sqrt(sum);
-    for (int i = 0; i < this->dim; i++) {
-        output[i] = input[i] * sum * this->weights->weights[i];
+    for (int i = 0; i < this->params->dim; i++) {
+        data_out[i] = data_in[i] * sum * this->params->weights[i];
     }
 }

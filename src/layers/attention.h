@@ -1,7 +1,8 @@
+#pragma once
 #include <vector>
-#include <src/layers/attention.h>
-#include <src/data/tensor.h>
-#include <src/layers/base_layer.h>
+#include <layers/attention.h>
+#include <data/tensor.h>
+#include <layers/base_layer.h>
 
 
 class AttentionArgs {

@@ -1,5 +1,7 @@
+#pragma once
+
 #include <vector>
-#include <src/layers/base_layer.h>
+#include <layers/base_layer.h>
 
 
 class Softmax: public BaseLayer {
