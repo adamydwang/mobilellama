@@ -7,9 +7,16 @@
 
 class Matmul: public BaseLayer {
 public:
-    Matmul(int m, int n): m(m), n(n) {}
-    void forward(const std::vector<Tensor*>& inputs, const std::vector<Tensor*>& outputs);
+    Matmul(): cache(nullptr) {}
+    ~Matmul() {
+        if (cache != nullptr) {
+            delete cache;
+        }
+    } 
+    void forward(Tensor& input0, Tensor& input1, Tensor& output);
+    void load_weights(FILE*& fp) {
+        return;
+    }
 private:
-    int m;
-    int n;
+    Tensor* cache;
 };

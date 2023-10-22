@@ -7,5 +7,8 @@
 class Softmax: public BaseLayer {
 public:
     Softmax() {}
-    void forward(const std::vector<Tensor*>& inputs, const std::vector<Tensor*>& outputs);
+    void forward(Tensor& input, Tensor& output);
+    void load_weights(FILE*& fp) {
+        return;
+    }
 };

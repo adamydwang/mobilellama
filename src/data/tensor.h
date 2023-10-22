@@ -4,34 +4,43 @@
 #include <vector>
 #include <memory>
 #include <spdlog/spdlog.h>
+#include <stdio.h>
 
 
 class Tensor {
 public:
     Tensor() {
+        this->dims = {0};
         this->data_ptr = nullptr;
         ref_count = new int(1);
+        printf("new ref_count: %p\n", ref_count);
     }
 
-    Tensor(std::vector<int>& dims) {
-        this->dims = dims;
+    Tensor(std::vector<int>& _dims) {
+        this->dims = _dims;
         this->data_ptr = new float[this->size()];
+        printf("new data_ptr: %p\n", this->data_ptr);
         ref_count = new int(1);
+        printf("new ref_count: %p\n", ref_count);
     }
 
-    Tensor(std::vector<int>& dims, float* data) {
-        this->dims = dims;
+    Tensor(std::vector<int>& _dims, float* _data) {
+        this->dims = _dims;
         this->data_ptr = new float[this->size()];
-        memcpy(this->data_ptr, data, this->size() * sizeof(float));
+        printf("new data_ptr: %p\n", this->data_ptr);
+        memcpy(this->data_ptr, _data, this->size() * sizeof(float));
         ref_count = new int(1);
+        printf("new ref_count: %p\n", ref_count);
     }
     
     ~Tensor() {
         (*this->ref_count)--;
         if (*this->ref_count <= 0) {
             if (this->data_ptr != nullptr) {
+                printf("delete data_ptr: %p\n", this->data_ptr);
                 delete[] this->data_ptr;
             }
+            printf("delete ref_count: %p\n", this->ref_count);
             delete this->ref_count;
         }
     }
@@ -41,8 +50,10 @@ public:
         (*this->ref_count)--;
         if (*this->ref_count <= 0) {
             if (this->data_ptr != nullptr) {
+                printf("delete data_ptr: %p\n", this->data_ptr);
                 delete[] this->data_ptr;
             }
+            printf("delete ref_count: %p\n", this->ref_count);
             delete this->ref_count;
         }
         this->dims = other.dims;
@@ -63,8 +74,8 @@ public:
         return size;
     }
 
-    float* data_ptr;
     std::vector<int> dims;
 private:
     int *ref_count;
+    float* data_ptr;
 };
