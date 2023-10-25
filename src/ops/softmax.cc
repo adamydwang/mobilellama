@@ -1,9 +1,9 @@
 #include <vector>
-#include <layers/softmax.h>
+#include <ops/softmax.h>
 #include <data/tensor.h>
 
 
-void Softmax::forward(Tensor& input, Tensor& output) {
+void softmax(Tensor& input, Tensor& output) {
     float* data_in = input.data();
     float* data_out = input.data();
     int size = input.size();

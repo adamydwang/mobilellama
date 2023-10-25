@@ -2,10 +2,11 @@
 
 #include <string.h>
 #include <vector>
-#include <memory>
 #include <spdlog/spdlog.h>
 #include <stdio.h>
+#include <data/memory_manager.h>
 
+extern MemoryManager memory_manager;
 
 class Tensor {
 public:
@@ -14,25 +15,41 @@ public:
         this->data_ptr = nullptr;
     }
 
-    Tensor(std::vector<int>& _dims) {
-        this->dims = _dims;
-        float* data = new float[this->size()];
-        this->data_ptr = std::shared_ptr<float[]>(data, std::default_delete<float[]>());
+    Tensor(std::vector<int>& dims, int space_size = 0) {
+        this->dims = dims;
+        if (space_size == 0) {
+            space_size = this->size();
+        }
+        this->space_size = space_size;
+        this->data_ptr = memory_manager.allocate(this->space_size);
     }
-
-    Tensor(std::vector<int>& _dims, float* _data) {
-        this->dims = _dims;
-        float* data = new float[this->size()];
-        memcpy(data, _data, this->size() * sizeof(float));
-        this->data_ptr = std::shared_ptr<float[]>(data, std::default_delete<float[]>());
+    Tensor(std::vector<int>& dims, float* data, int space_size = 0) {
+        this->dims = dims;
+        if (space_size == 0) {
+            space_size = this->size();
+        }
+        this->space_size = space_size;
+        this->data_ptr = data;
     }
     
     ~Tensor() {}
 
     float* data() {
-        return this->data_ptr.get();
+        return this->data_ptr;
     }
 
+    void reshape(std::vector<int>& dims) {
+        this->dims = dims;
+    }
+
+    void copy_from(Tensor& other) {
+        if (this->space_size != other.space_size) {
+            spdlog::error("Tensor copy_from error: space_size not equal");
+            return;
+        }
+        memcpy(this->data_ptr, other.data_ptr, this->space_size * sizeof(float));
+    }
+    
     int size() {
         int size = 1;
         for (int i = 0; i < dims.size(); i++) {
@@ -42,6 +59,7 @@ public:
     }
 
     std::vector<int> dims;
+    int space_size;
 private:
-    std::shared_ptr<float[]> data_ptr;
+    float* data_ptr;
 };
