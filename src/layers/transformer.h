@@ -30,32 +30,20 @@ public:
             // other
             Tensor& _w_rms_attn,
             Tensor& _w_rms_ffn,
-            Tensor& _w_rms_final,
-            Tensor& _w_classifier, // [dim, vocab_size]
-            Tensor& _embeddings, // [vocab_size, dim]
-            Tensor& _input_tensor, // [dim] = [n_heads * head_size]
             Tensor& _cache_i // [n_heads * head_size]
     ): attention(_n_heads, _n_kv_heads, _dim, _max_len, _wq, _wk, _wv, _wo, _cache_q, _cache_attn),
     mlp(_w_gate, _w_up, _w_down, _cache_gate, _cache_up),
     rms_attn(_w_rms_attn),
     rms_ffn(_w_rms_ffn),
-    rms_final(_w_rms_final),
-    w_classifier(_w_classifier),
-    embeddings(_embeddings),
-    input_tensor(_input_tensor),
     cache_i(_cache_i), dim(_dim) {}
 
-    void forward(int token, int pos, Tensor& output);
+    void forward(Tensor& input, int pos, Tensor& output);
 
 private:
     Attention attention;
     MLP mlp;
     RMSNorm rms_attn;
     RMSNorm rms_ffn;
-    RMSNorm rms_final;
-    Tensor w_classifier; // [dim, vocab_size]
-    Tensor embeddings; // [vocab_size, dim]
     Tensor cache_i; // [n_heads * head_size]
-    Tensor input_tensor; // [dim]
     int dim;
 };

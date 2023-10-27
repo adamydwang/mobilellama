@@ -7,10 +7,10 @@ add_executable(
     ${TEST_SOURCES}
     ${SOURCES}
 )
-
 target_link_libraries(
     ${PROJECT_NAME}_test
     GTest::gtest_main
+    sentencepiece
 )
 
 include(GoogleTest)

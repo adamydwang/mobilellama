@@ -12,8 +12,9 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/deps/googletest/googletest/include
     ${PROJECT_SOURCE_DIR}/deps/spdlog/include
 )
-
-file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cc)
+link_directories(${PROJECT_SOURCE_DIR}/lib)
+file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cc ${PROJECT_SOURCE_DIR}/src/*.h)
+add_library(mobilellama SHARED ${SOURCES})
+target_link_libraries(mobilellama sentencepiece)
 add_subdirectory(${PROJECT_SOURCE_DIR}/deps)
 add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
-add_library(mobilellama SHARED ${SOURCES})
