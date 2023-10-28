@@ -39,7 +39,27 @@ public:
     }
 
     void reshape(std::vector<int>& dims) {
+        int new_size = 1;
+        for (int i = 0; i < dims.size(); i++) {
+            new_size *= dims[i];
+        }
+        if (new_size != this->size()) {
+            throw std::runtime_error("Tensor reshape error: size not equal: " + std::to_string(new_size) + " " + std::to_string(this->size()));
+        }
         this->dims = dims;
+    }
+
+    void print(const std::string& name) {
+        printf("Tensor %s: ", name.c_str());
+        for (int i = 0; i < this->dims.size(); i++) {
+            printf("%d ", this->dims[i]);
+        }
+        printf("\n");
+        int size = this->size();
+        for (int i = 0; i < size; i++) {
+            printf("%f ", this->data_ptr[i]);
+        }
+        printf("\n");
     }
 
     void copy_from(Tensor& other) {

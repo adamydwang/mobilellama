@@ -14,7 +14,7 @@ void RMSNorm::forward(Tensor& input, Tensor& output) {
     sum += eps;
     sum = 1.0f / sqrt(sum);
     for (int i = 0; i < size; i++) {
-        data_out[i] = data_in[i] * sum * w[i];
+        data_out[i] = data_in[i] * (sum * w[i]);
     }
     output = input;
 }

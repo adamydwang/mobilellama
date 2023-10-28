@@ -22,6 +22,7 @@ public:
         }
         this->config = new ModelConfig();
         this->config->load(fp);
+        this->config->print();
         this->weights = new ModelWeights(this->config);
         this->weights->load(fp);
         fclose(fp);
@@ -82,7 +83,9 @@ public:
 
     int forward(int token, int pos, float temperature=1.0, float top_p=0.85) {
         std::vector<int> dims = {this->config->dim};
+        printf("token: %d\n", token);
         Tensor embedding = Tensor(dims, this->embeddings.data() + token * this->config->dim);
+        // embedding.print("embedding");
         this->input_tensor.copy_from(embedding);
         for (int i = 0; i < this->config->n_layers; i++) {
             this->transformers[i]->forward(this->input_tensor, pos, this->input_tensor);
@@ -92,9 +95,16 @@ public:
         // [vocab_size, dim] x [dim, 1] = [vocab_size, 1]
         dims = {this->config->dim, 1};
         this->input_tensor.reshape(dims);
+        // printf("classifier x input_tensor = [%d, %d] x [%d, %d]\n", this->w_classifier.dims[0], this->w_classifier.dims[1], this->input_tensor.dims[0], this->input_tensor.dims[1]);
         matmul(this->w_classifier, this->input_tensor, this->output_tensor);
+        // printf("output_tensor = [%d, %d]\n", this->output_tensor.dims[0], this->output_tensor.dims[1]);
         dims = {this->config->vocab_size};
         output_tensor.reshape(dims);
+        /*
+        for (int i = 0; i < this->config->vocab_size; i++) {
+            printf("%f ", this->output_tensor.data()[i]);
+        }
+        printf("\n");*/
         return this->sampler->sample(output_tensor, temperature, top_p);
     }
 

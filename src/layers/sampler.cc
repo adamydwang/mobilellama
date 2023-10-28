@@ -8,7 +8,7 @@
 
 int Sampler::sample_argmax(Tensor& logits) {
     float* probs = logits.data();
-    float max_prob = 0;
+    float max_prob = probs[0];
     int max_index = 0;
     for (int i = 0; i < this->vocab_size; ++i) {
         if (probs[i] > max_prob) {
@@ -16,6 +16,7 @@ int Sampler::sample_argmax(Tensor& logits) {
             max_index = i;
         }
     }
+    printf("max_index=%d, max_prob = %f\n", max_index, max_prob);
     return max_index;
 }
 
@@ -63,12 +64,16 @@ int Sampler::sample_topp(Tensor& logits, float temperature, float top_p) {
 
 
 int Sampler::sample(Tensor& logits, float temperature, float top_p) {
+    printf("temperature=%f, top_p=%f\n", temperature, top_p);
     if (top_p < 0.0f || top_p > 1.0f) {
+        printf("top_p should be in [0.0, 1.0]\n");
         top_p = 1.0f;
     }
     if (top_p < 1e-5f) {
+        printf("sample_argmax\n");
         return this->sample_argmax(logits);
     } else {
+        printf("sample_topp\n");
         return this->sample_topp(logits, temperature, top_p);
     }
 }

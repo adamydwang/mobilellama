@@ -22,12 +22,13 @@ void LlmProcessor::generate(const std::string& text, std::string& output, float 
         int pos = 0;
         int token = 0;
         for (auto id : ids) {
-            token = this->model->forward(id, pos++);
+            token = this->model->forward(id, pos++, temperature, top_p);
         }
         std::vector<int> output_tokens;
         output_tokens.push_back(token);
         for (int i  = ids.size(); i < max_len; i++) {
             token = this->model->forward(token, pos++, temperature, top_p);
+            printf("output token: %d eos=%d\n", token, this->tokenizer->eos_id);
             if (token == this->tokenizer->eos_id) {
                 break;
             }

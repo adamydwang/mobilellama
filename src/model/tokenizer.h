@@ -1,5 +1,6 @@
 #pragma once
 #include <spdlog/spdlog.h>
+#include <stdio.h>
 #include <sentencepiece_processor.h>
 
 class Tokenizer {
@@ -17,11 +18,20 @@ public:
 
     ~Tokenizer();
     void encode(const std::string& text, std::vector<int>& ids) {
+        printf("encode: %s\n", text.c_str());
         this->processor.Encode(text, &ids);
+        for (auto& id : ids) {
+            printf("%d ", id);
+        }
+        printf("\n");
     }
 
     void decode(const std::vector<int>& ids, std::string& text) {
         this->processor.Decode(ids, &text);
+        for (auto id: ids) {
+            printf("%d ", id);
+        }
+        printf("\n");
     }
 
     int bos_id;

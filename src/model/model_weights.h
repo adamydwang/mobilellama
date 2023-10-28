@@ -33,10 +33,10 @@ public:
         fread(w_rms_ffn, sizeof(float), config->dim, fp);
         w_gate = memory_manager.allocate(config->dim * config->dim);
         fread(w_gate, sizeof(float), config->dim * config->hidden_dim, fp);
-        w_up = memory_manager.allocate(config->dim * config->hidden_dim);
-        fread(w_up, sizeof(float), config->dim * config->hidden_dim, fp);
         w_down = memory_manager.allocate(config->dim * config->hidden_dim);
         fread(w_down, sizeof(float), config->dim * config->hidden_dim, fp);
+        w_up = memory_manager.allocate(config->dim * config->hidden_dim);
+        fread(w_up, sizeof(float), config->dim * config->hidden_dim, fp);
     }
     float* wq;
     float* wk;
